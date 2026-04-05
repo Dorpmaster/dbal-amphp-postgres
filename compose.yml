@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${DBAL_AMP_PG_DBNAME:-dbal_amp_pg_test}
+      POSTGRES_USER: ${DBAL_AMP_PG_USER:-dbal_amp_pg_user}
+      POSTGRES_PASSWORD: ${DBAL_AMP_PG_PASSWORD:-dbal_amp_pg_password}
+    ports:
+      - "${DBAL_AMP_PG_PORT:-55432}:5432"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 2s
+
+  integration:
+    image: ${DOCKER_IMAGE:-dorpmaster/dbal-amphp-postgres-dev:latest}
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DBAL_AMP_PG_HOST: postgres
+      DBAL_AMP_PG_PORT: 5432
+      DBAL_AMP_PG_DBNAME: ${DBAL_AMP_PG_DBNAME:-dbal_amp_pg_test}
+      DBAL_AMP_PG_USER: ${DBAL_AMP_PG_USER:-dbal_amp_pg_user}
+      DBAL_AMP_PG_PASSWORD: ${DBAL_AMP_PG_PASSWORD:-dbal_amp_pg_password}
+      DBAL_AMP_PG_APPLICATION_NAME: ${DBAL_AMP_PG_APPLICATION_NAME:-dbal-amphp-postgres-tests}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - vendor/bin/phpunit
+      - --testsuite
+      - integration

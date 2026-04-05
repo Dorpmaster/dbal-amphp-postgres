@@ -1,0 +1,12 @@
+parameters:
+    level: 6
+    paths:
+        - src
+        - tests
+    ignoreErrors:
+        -
+            identifier: property.unusedType
+            path: tests/Integration/Orm/Entity/User.php
+        -
+            identifier: property.unusedType
+            path: tests/Integration/Orm/Entity/Post.php

@@ -1,0 +1,11 @@
+collect_context.zsh
+vendor/
+.idea/
+.vscode/
+*.iml
+.phpunit.cache/
+var/
+coverage/
+tmp/
+.DS_Store
+composer.lock
